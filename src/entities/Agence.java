@@ -15,7 +15,7 @@ public class Agence {
 
     //Attributs Navigationnels => Attributs issus des relations
      //OneToMany => Une Agence a plusieurs comptes
-     ArrayList<Compte> compteList;
+      private  ArrayList<Compte> compteList;
 
     public ArrayList<Compte> getCompteList() {
         return compteList;

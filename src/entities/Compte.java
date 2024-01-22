@@ -9,9 +9,9 @@ public class Compte {
 
     //Attributs Navigationnels => Attributs issus des relations
      //ManyTOne => Plusieurs Comptes sont crees dans une Agence
-     Agence Agence;
-     Client client;
-     ArrayList<CarteGab> CarteGabList;
+     private Agence Agence;
+     private Client client;
+     private  ArrayList<CarteGab> CarteGabList;
 
     public ArrayList<CarteGab> getCarteGabList() {
         return CarteGabList;
