@@ -5,11 +5,13 @@ import java.util.ArrayList;
 public class Compte {
     private int id;
     private String numero;
+    private ETypeCompte type;
     private double solde;
 
     //Attributs Navigationnels => Attributs issus des relations
      //ManyTOne => Plusieurs Comptes sont crees dans une Agence
      private Agence Agence;
+      //ManyTOne => Plusieurs Comptes appartiennent a un client
      private Client client;
      private  ArrayList<CarteGab> CarteGabList;
 
@@ -49,4 +51,10 @@ public class Compte {
     public void setSolde(double solde) {
         this.solde = solde;
     } 
+    public ETypeCompte getType() {
+        return type;
+    }
+    public void setType(ETypeCompte type) {
+        this.type = type;
+    }
 }

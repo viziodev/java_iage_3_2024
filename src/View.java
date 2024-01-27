@@ -2,7 +2,12 @@ import java.util.List;
 import java.util.Scanner;
 
 import entities.Agence;
+import entities.Cheque;
+import entities.Compte;
+import entities.ETypeCompte;
+import entities.Epargne;
 import services.AgenceService;
+import services.CompteService;
 
 public class View {
    
@@ -12,13 +17,16 @@ public class View {
          //La couche vue depend de la couche service
          //Creer un objet de type service dans la classe View
            AgenceService agenceService=new AgenceService();
+           CompteService compteService=new CompteService();
            Scanner scanner=new Scanner(System.in);
            int choix;
            do{
               System.out.println("1-Ajouter une Agence");
               System.out.println("2-Lister les  Agences");
               System.out.println("3-Lister les  Agences Par numero");
-              System.out.println("4-Quitter");
+              System.out.println("4-Lister les  Comptes");
+              System.out.println("5-Lister les  Comptes d'un client");
+              System.out.println("6-Quitter");
               choix=scanner.nextInt();
               scanner.nextLine();
               switch (choix) {
@@ -46,11 +54,39 @@ public class View {
                         System.out.println("Adresse: "+ ag.getAdresse());
                       }
                     break;
+
+                    case 4:
+                       List<Compte>  comptesList=compteService.listerCompte();
+                      for (Compte cp: comptesList) {
+                          System.out.println("Type: "+cp.getType());
+                          System.out.println("Numero: "+ cp.getNumero());
+                          System.out.println("Solde: "+ cp.getSolde());
+                         if (cp.getType()==ETypeCompte.Cheque) {
+                              //Conversion le Compte en Cheque  
+                               Cheque cmpteCheque=(Cheque)cp;
+                               System.out.println("Frais: "+ cmpteCheque.getFrais());
+                            } else {
+                                Epargne ctEpargne=(Epargne)cp;
+                                System.out.println("Taux: "+ ctEpargne.getTaux());
+                           }
+                          System.out.println("=========================");
+                      }
+                    break;
+                    case 5:
+                         System.out.println("Entrer le numero de Telephone");
+                         String tel= scanner.nextLine();
+                        comptesList=compteService.listerCompteUnClient(tel);
+                        for (Compte cp: comptesList) {
+                            System.out.println("Numero: "+ cp.getNumero());
+                            System.out.println("Solde: "+ cp.getSolde());
+                            System.out.println("===============");
+                        }
+                    break;
               
                 default:
                     break;
               }
-           }while(choix!=4);
+           }while(choix!=6);
        
     }
 }
