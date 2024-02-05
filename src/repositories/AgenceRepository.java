@@ -1,38 +1,80 @@
 package repositories;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import entities.Agence;
 
 public class AgenceRepository {
-  //Gerer Acces au donnes  
-  //Enregistrement, recuperation ,... des donnees de type Agence
-  private ArrayList<Agence> tableAgence=new ArrayList<>();
+
 
   //Insere dans la liste
   //Insere dans la BD
 
   public void insert(Agence agence){
-      tableAgence.add(agence);
+
   }
 
-  //recuper les donnees de la liste
-  //recuper les donnees de la BD
-    //Select * from agence'
+
   public ArrayList<Agence>  selectAll(){
-      return tableAgence;
+      String sql="select * from agence ";
+      ArrayList<Agence> agences=new ArrayList<>();
+    try {
+      //Chargement du Driver
+        Class.forName("com.mysql.cj.jdbc.Driver");
+      //étape 2: créer l'objet de connexion
+         Connection conn = DriverManager.getConnection(
+             "jdbc:mysql://localhost:8889/iageb_ism_2024", "root", "root");
+       //étape 3: créer l'objet statement,execution des Requetes 
+        Statement stmt = conn.createStatement();
+        //  ResultSet  , le resultat d'une requete select
+        ResultSet rs=stmt.executeQuery(sql);
+         while (rs.next()) {
+             //rs une ligne de la requete ==> a une agence
+             Agence agence=new Agence();
+             agence.setId(rs.getInt("id_ag"));
+             agence.setNumero(rs.getString("numero_ag"));
+             agence.setAdresse(rs.getString("adresse_ag"));
+             agences.add(agence);
+         }
+         rs.close();
+         conn.close();
+    } catch (Exception e) {
+         System.out.println("Erreur de chargement du Driver");
+    }
+       return agences;
   }
 
-  //recuper les donnees de la liste a travers le numero
-  //recuper les donnees de la BD
- //Select * from agence where numero like 'XXXX'
   public ArrayList<Agence>  selectByNumero(String numero){
-      ArrayList   listAgenceByNumero=new ArrayList<>();
-     for (Agence agence : tableAgence) {
-           if(agence.getNumero().compareTo(numero)==0){
-             listAgenceByNumero.add(agence);
-           }
-     }
-       return listAgenceByNumero;
+    String sql="select * from agence where numero_ag like '"+numero+"'";
+    ArrayList<Agence> agences=new ArrayList<>();
+  try {
+    //Chargement du Driver
+      Class.forName("com.mysql.cj.jdbc.Driver");
+    //étape 2: créer l'objet de connexion
+       Connection conn = DriverManager.getConnection(
+           "jdbc:mysql://localhost:8889/iageb_ism_2024", "root", "root");
+     //étape 3: créer l'objet statement,execution des Requetes 
+      Statement stmt = conn.createStatement();
+      //  ResultSet  , le resultat d'une requete select
+      ResultSet rs=stmt.executeQuery(sql);
+       while (rs.next()) {
+           //rs une ligne de la requete ==> a une agence
+           Agence agence=new Agence();
+           agence.setId(rs.getInt("id_ag"));
+           agence.setNumero(rs.getString("numero_ag"));
+           agence.setAdresse(rs.getString("adresse_ag"));
+           agences.add(agence);
+       }
+       rs.close();
+       conn.close();
+      
+  } catch (Exception e) {
+       System.out.println("Erreur de chargement du Driver");
+  }
+     return agences;
   }
 }
