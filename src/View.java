@@ -3,10 +3,12 @@ import java.util.Scanner;
 
 import entities.Agence;
 import entities.Cheque;
+import entities.Client;
 import entities.Compte;
 import entities.ETypeCompte;
 import entities.Epargne;
 import services.AgenceService;
+import services.ClientService;
 import services.CompteService;
 
 public class View {
@@ -18,6 +20,7 @@ public class View {
          //Creer un objet de type service dans la classe View
            AgenceService agenceService=new AgenceService();
            CompteService compteService=new CompteService();
+           ClientService clientService=new ClientService();
            Scanner scanner=new Scanner(System.in);
            int choix;
            do{
@@ -26,7 +29,9 @@ public class View {
               System.out.println("3-Lister les  Agences Par numero");
               System.out.println("4-Lister les  Comptes");
               System.out.println("5-Lister les  Comptes d'un client");
-              System.out.println("6-Quitter");
+              System.out.println("6-Creer un Client");
+              System.out.println("7-Lister les clients");
+              System.out.println("8-Quitter");
               choix=scanner.nextInt();
               scanner.nextLine();
               switch (choix) {
@@ -82,11 +87,30 @@ public class View {
                             System.out.println("===============");
                         }
                     break;
-              
+
+                    case 6:
+                         Client client=new Client();
+                         System.out.println("Entrer le Nom et Prenom");
+                         client.setNomComplet(scanner.nextLine());
+                         System.out.println("Entrer le numero de Telephone");
+                         client.setTel(scanner.nextLine());
+                         System.out.println("Entrer Email");
+                         client.setEmail(scanner.nextLine());
+                         clientService.addClient(client);
+                    break;
+                    case 7:
+                    List<Client> clients = clientService.listerClients();
+                    for (Client cl: clients) {
+                      System.out.println("Nom et Prenom: "+ cl.getNomComplet());
+                      System.out.println("Telephone : "+ cl.getTel());
+                      System.out.println("Email : "+ cl.getEmail());
+                      System.out.println("==================================");
+                  }
+                  break;
                 default:
                     break;
               }
-           }while(choix!=6);
+           }while(choix!=87);
        
     }
 }
