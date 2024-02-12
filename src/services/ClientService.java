@@ -13,4 +13,8 @@ public class ClientService {
          public List<Client> listerClients(){
             return clientRepository.selectAll();
          }
+
+         public Client recherClientParTelephone(String telephone){
+          return clientRepository.selectByTelephone(telephone);
+        }
 }

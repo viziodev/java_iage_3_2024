@@ -15,6 +15,27 @@ public class AgenceRepository {
   //Insere dans la BD
 
   public void insert(Agence agence){
+    /*
+     * Code de Format
+     * %s => String 
+     * %d => int
+     * %f => float
+     */
+    String sql=String.format("INSERT INTO `agence` (`numero_ag`, `adresse_ag`)"+
+                              "VALUES ('%s', '%s') ",
+                             agence.getNumero(),agence.getAdresse());
+     try {
+          //Chargement du Driver
+          Class.forName("com.mysql.cj.jdbc.Driver");                  
+          Connection conn = DriverManager.getConnection(
+                                     "jdbc:mysql://localhost:8889/iageb_ism_2024", "root", "root");
+          Statement stmt = conn.createStatement();
+          stmt.executeUpdate(sql);               
+          conn.close();
+      } catch (Exception e) 
+      {
+         System.out.println("Erreur de chargement du Driver");
+      }
 
   }
 
@@ -26,6 +47,8 @@ public class AgenceRepository {
       //Chargement du Driver
         Class.forName("com.mysql.cj.jdbc.Driver");
       //étape 2: créer l'objet de connexion
+        //Windows port de mysql ==> 3306
+        //Wamp ou Xamp user=root password=""
          Connection conn = DriverManager.getConnection(
              "jdbc:mysql://localhost:8889/iageb_ism_2024", "root", "root");
        //étape 3: créer l'objet statement,execution des Requetes 
@@ -49,8 +72,8 @@ public class AgenceRepository {
   }
 
   public ArrayList<Agence>  selectByNumero(String numero){
-    String sql="select * from agence where numero_ag like '"+numero+"'";
-    ArrayList<Agence> agences=new ArrayList<>();
+     String sql= String.format("select * from agence where numero_ag like '%s' ",numero);
+     ArrayList<Agence> agences=new ArrayList<>();
   try {
     //Chargement du Driver
       Class.forName("com.mysql.cj.jdbc.Driver");

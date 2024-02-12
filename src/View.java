@@ -89,14 +89,22 @@ public class View {
                     break;
 
                     case 6:
-                         Client client=new Client();
-                         System.out.println("Entrer le Nom et Prenom");
-                         client.setNomComplet(scanner.nextLine());
-                         System.out.println("Entrer le numero de Telephone");
-                         client.setTel(scanner.nextLine());
-                         System.out.println("Entrer Email");
-                         client.setEmail(scanner.nextLine());
-                         clientService.addClient(client);
+                      Client client;
+                          System.out.println("Entrer le numero de Telephone");
+                          tel=scanner.nextLine();   
+                          client =clientService.recherClientParTelephone(tel);
+                          if(client==null){
+                            client=new Client();
+                            client.setTel(tel);
+                            System.out.println("Entrer le Nom et Prenom");
+                            client.setNomComplet(scanner.nextLine());
+                            System.out.println("Entrer Email");
+                            client.setEmail(scanner.nextLine());
+                            clientService.addClient(client);
+                          }else{
+                            System.out.println("Ce numero telephone existe deja");
+                          }
+                        
                     break;
                     case 7:
                     List<Client> clients = clientService.listerClients();

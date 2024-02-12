@@ -7,7 +7,7 @@ public class Client {
     private String nomComplet;
     private String tel;
     private String email;
-
+    
     //OneToMany Un Client peut avoir plusieurs Compte
     private ArrayList<Compte> compteList;
     
