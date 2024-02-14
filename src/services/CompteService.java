@@ -14,4 +14,8 @@ public class CompteService {
     public  List<Compte> listerCompteUnClient(String tel){
         return compteRepository.selectByClient(tel);
    }
+
+    public  void ajouterCompte(Compte compte){
+        compteRepository.insert(compte);
+   }
 }

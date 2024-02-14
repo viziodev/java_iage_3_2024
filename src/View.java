@@ -27,6 +27,7 @@ public class View {
               System.out.println("1-Ajouter une Agence");
               System.out.println("2-Lister les  Agences");
               System.out.println("3-Lister les  Agences Par numero");
+              System.out.println("9-Creer un Compte");
               System.out.println("4-Lister les  Comptes");
               System.out.println("5-Lister les  Comptes d'un client");
               System.out.println("6-Creer un Client");
@@ -63,9 +64,12 @@ public class View {
                     case 4:
                        List<Compte>  comptesList=compteService.listerCompte();
                       for (Compte cp: comptesList) {
+                          System.out.println("Client: "+ cp.getClient().getNomComplet());
+                          System.out.println("Agence : "+ cp.getAgence().getAdresse());
                           System.out.println("Type: "+cp.getType());
                           System.out.println("Numero: "+ cp.getNumero());
                           System.out.println("Solde: "+ cp.getSolde());
+                        
                          if (cp.getType()==ETypeCompte.Cheque) {
                               //Conversion le Compte en Cheque  
                                Cheque cmpteCheque=(Cheque)cp;
@@ -104,6 +108,64 @@ public class View {
                           }else{
                             System.out.println("Ce numero telephone existe deja");
                           }
+                        
+                    break;
+
+                    case 9:
+                         System.out.println("Entrer le numero Agence");
+                         numero= scanner.nextLine();
+                         listerAgences = agenceService.listerAgences(numero);
+                       if (listerAgences.size()==0) {
+                            System.out.println("Le  numero Agence est incorrect");   
+                       } else {
+                          System.out.println("Entrer le numero de Telephone");
+                          tel=scanner.nextLine();   
+                          client =clientService.recherClientParTelephone(tel);
+                          //Nouveau Client => Enregistrer Client
+                            if(client==null){
+                              client=new Client();
+                              client.setTel(tel);
+                              System.out.println("Entrer le Nom et Prenom");
+                              client.setNomComplet(scanner.nextLine());
+                              System.out.println("Entrer Email");
+                              client.setEmail(scanner.nextLine());
+                              clientService.addClient(client);
+                              //Recuperer l'id du client
+                              client =clientService.recherClientParTelephone(tel);
+                           }
+                            System.out.println("Entrer le Numero du Compte");
+                            numero=scanner.nextLine();
+                            System.out.println("Entrer le Solde du Compte");
+                            double solde=scanner.nextDouble();
+                            System.out.println("Entrer le Type du compte");
+                            System.out.println("1- Cheque");
+                            System.out.println("2- Epargne");
+                            int type =scanner.nextInt();
+                            if (type==1) {
+                              System.out.println("Entrer les Frais du Compte ");
+                              double frais=scanner.nextDouble();
+                              Cheque compteCheque=new Cheque();
+                              compteCheque.setSolde(solde);
+                              compteCheque.setNumero(numero);
+                              compteCheque.setType(ETypeCompte.Cheque);
+                              compteCheque.setFrais(frais);
+                              compteCheque.setClient(client);
+                              compteCheque.setAgence(listerAgences.get(0));
+                              compteService.ajouterCompte(compteCheque);
+                              
+                            } else {
+                               System.out.println("Entrer le Taux du Compte ");
+                               double taux=scanner.nextDouble();
+                               Epargne comptEpargne=new Epargne();
+                                comptEpargne.setSolde(solde);
+                                comptEpargne.setNumero(numero);
+                                comptEpargne.setType(ETypeCompte.Epargne);
+                                comptEpargne.setTaux(taux);
+                                comptEpargne.setClient(client);
+                                comptEpargne.setAgence(listerAgences.get(0));
+                                compteService.ajouterCompte(comptEpargne);
+                            }
+                          }  
                         
                     break;
                     case 7:
