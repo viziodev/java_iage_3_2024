@@ -1,25 +1,26 @@
 package repositories;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import core.Database;
 import entities.Client;
 
-public class ClientRepository {
+public class ClientRepository extends Database {
+    private final String SQL_SELECT_ALL="select * from client  ";
+    private final String SQL_SELECT_BY_TEL="select * from client where telephone_client like ?";
+    private final String SQL_INSERT="INSERT INTO `client` (`nom_complet_client`, `telephone_client`, `email_client`) VALUES (?,?,?) ";
+ 
    
       public void insert(Client client){
-           String sql=String.format("INSERT INTO `client` (`nom_complet_client`, `telephone_client`, `email_client`)"+
-            "VALUES ('%s', '%s', '%s')",client.getNomComplet(),client.getTel(),client.getEmail());
+         
           try {
-              //Chargement du Driver
-              Class.forName("com.mysql.cj.jdbc.Driver");                  
-              Connection conn = DriverManager.getConnection(
-                                        "jdbc:mysql://localhost:8889/iageb_ism_2024", "root", "root");
-              Statement stmt = conn.createStatement();
-              stmt.executeUpdate(sql);               
-              conn.close();
+             ouvrirConnexion();
+             initPrepareStatement(SQL_INSERT);
+             statement.setString(1, client.getNomComplet());
+             statement.setString(2, client.getTel());
+             statement.setString(3, client.getEmail());
+              executeUpdate();
+             fermerConnexion();
           } catch (Exception e) 
            {
             System.out.println("Erreur de chargement du Driver");
@@ -30,14 +31,11 @@ public class ClientRepository {
 
 
       public ArrayList<Client>  selectAll(){
-        String sql="select * from client ";
         ArrayList<Client> clients=new ArrayList<>();
     try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-         Connection conn = DriverManager.getConnection(
-             "jdbc:mysql://localhost:8889/iageb_ism_2024", "root", "root");
-        Statement stmt = conn.createStatement();
-        ResultSet rs=stmt.executeQuery(sql);
+        ouvrirConnexion();
+         initPrepareStatement(SQL_SELECT_ALL);
+         ResultSet rs= executeSelect();
          while (rs.next()) {
              //rs une ligne de la requete ==> a une agence
              Client client=new Client();
@@ -48,7 +46,7 @@ public class ClientRepository {
              clients.add(client);
          }
          rs.close();
-         conn.close();
+        fermerConnexion();
     } catch (Exception e) {
          System.out.println("Erreur de chargement du Driver");
     }
@@ -56,14 +54,13 @@ public class ClientRepository {
      }
 
      public Client  selectByTelephone(String telephone){
-      String sql=String.format("select * from client where telephone_client like '%s' ",telephone);
+     
       Client client=null;
   try {
-      Class.forName("com.mysql.cj.jdbc.Driver");
-       Connection conn = DriverManager.getConnection(
-           "jdbc:mysql://localhost:8889/iageb_ism_2024", "root", "root");
-      Statement stmt = conn.createStatement();
-      ResultSet rs=stmt.executeQuery(sql);
+         ouvrirConnexion();
+        initPrepareStatement(SQL_SELECT_BY_TEL);
+        statement.setString(1, telephone);
+        ResultSet rs= executeSelect();
        if (rs.next()) {
            //rs une ligne de la requete ==> a une agence
             client=new Client();

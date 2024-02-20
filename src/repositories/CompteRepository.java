@@ -1,13 +1,11 @@
 package repositories;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import core.Database;
 import entities.Agence;
 import entities.Cheque;
 import entities.Client;
@@ -15,21 +13,22 @@ import entities.Compte;
 import entities.ETypeCompte;
 import entities.Epargne;
 
-public class CompteRepository {
-
+public class CompteRepository extends Database {
+     private final String SQL_SELECT_ALL="SELECT * FROM `Compte` c , client cl,agence ag where c.client_id=cl.id_client and c.ag_id=ag.id_ag ";
+     private final String SQL_SELECT_BY_TEL="SELECT * FROM `Compte` c,client cl WHERE c.`client_id`=cl.id_client and cl.telephone_client like ? ";
+     private final String SQL_INSERT="INSERT INTO `Compte` ( `numero_cpte`, `solde_cpte`, `frais_cpte`, `taux_cpte`, `type_cpte`, `client_id`,ag_id) VALUES (?,?,?,?,?,?,?) ";
+  
      public CompteRepository() {
          
     }
     
     public List<Compte> selectAll(){
-       String sql="SELECT * FROM `Compte` c , client cl,agence ag where c.client_id=cl.id_client and c.ag_id=ag.id_ag";
+      
        ArrayList<Compte> comptes=new ArrayList<>();
     try {
-         Class.forName("com.mysql.cj.jdbc.Driver");
-         Connection conn = DriverManager.getConnection(
-             "jdbc:mysql://localhost:8889/iageb_ism_2024", "root", "root");
-        Statement stmt = conn.createStatement();
-        ResultSet rs=stmt.executeQuery(sql);
+         ouvrirConnexion();
+         initPrepareStatement(SQL_SELECT_ALL);
+         ResultSet rs= executeSelect();
          while (rs.next()) {
              //rs une ligne de la requete ==> a une agence
             //Donnees Client
@@ -71,21 +70,20 @@ public class CompteRepository {
             
          }
          rs.close();
-         conn.close();
+         fermerConnexion();
     } catch (Exception e) {
          System.out.println("Erreur de chargement du Driver");
     }
        return comptes;   
      }
      public List<Compte> selectByClient(String tel){
-        String sql=String.format("SELECT * FROM `Compte` c,client cl WHERE c.`client_id`=cl.id_client and cl.telephone_client like '%s'", tel);
+     
        ArrayList<Compte> comptes=new ArrayList<>();
     try {
-         Class.forName("com.mysql.cj.jdbc.Driver");
-         Connection conn = DriverManager.getConnection(
-             "jdbc:mysql://localhost:8889/iageb_ism_2024", "root", "root");
-        Statement stmt = conn.createStatement();
-        ResultSet rs=stmt.executeQuery(sql);
+         ouvrirConnexion();
+         initPrepareStatement(SQL_SELECT_BY_TEL);
+         statement.setString(1, tel);
+        ResultSet rs= executeSelect();
          while (rs.next()) {
              //rs une ligne de la requete ==> a une agence
              String type=rs.getString("type_cpte");
@@ -106,10 +104,9 @@ public class CompteRepository {
                 comptEpargne.setTaux(rs.getDouble("taux_cpte"));
                 comptes.add(comptEpargne);
              }
-
          }
          rs.close();
-         conn.close();
+        fermerConnexion();
     } catch (Exception e) {
          System.out.println("Erreur de chargement du Driver");
     }
@@ -125,24 +122,19 @@ public class CompteRepository {
                Epargne epargne= (Epargne)compte;
                taux=epargne.getTaux();
           }
-          String sql="INSERT INTO `Compte` ( `numero_cpte`, `solde_cpte`, `frais_cpte`, `taux_cpte`, `type_cpte`, `client_id`,ag_id)"
-                              +" VALUES (?,?,?,?,?,?,?)";
                  
         try {
-            //Chargement du Driver
-            Class.forName("com.mysql.cj.jdbc.Driver");                  
-            Connection conn = DriverManager.getConnection(
-                                      "jdbc:mysql://localhost:8889/iageb_ism_2024", "root", "root");
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, compte.getNumero());  
-            stmt.setDouble(2, compte.getSolde());  
-            stmt.setDouble(3, frais);  
-            stmt.setDouble(4, taux);
-            stmt.setString(5, compte.getType().name()); 
-            stmt.setInt(6, compte.getClient().getId()); 
-            stmt.setInt(7, compte.getAgence().getId()); 
-            stmt.executeUpdate() ;            
-            conn.close();
+            ouvrirConnexion();
+            initPrepareStatement(SQL_INSERT);
+            statement.setString(1, compte.getNumero());  
+            statement.setDouble(2, compte.getSolde());  
+            statement.setDouble(3, frais);  
+            statement.setDouble(4, taux);
+            statement.setString(5, compte.getType().name()); 
+            statement.setInt(6, compte.getClient().getId()); 
+            statement.setInt(7, compte.getAgence().getId()); 
+            statement.executeUpdate() ;            
+           fermerConnexion();
            } catch (Exception e) 
            {
                System.out.println("Erreur de chargement du Driver");
